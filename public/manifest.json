@@ -1,0 +1,16 @@
+{
+  "name": "NV AI",
+  "short_name": "NV AI",
+  "description": "Next-Gen 3D Artificial Intelligence by MR. NAYSAD VANSH",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
