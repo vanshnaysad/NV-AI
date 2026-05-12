@@ -247,6 +247,11 @@ body {
 }
 @media (max-width: 1024px) {
   .comparison-grid {
-    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+@media (max-width: 768px) {
+  .comparison-grid {
+    gap: 8px;
   }
 }
