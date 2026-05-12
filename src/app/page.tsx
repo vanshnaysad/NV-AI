@@ -10,6 +10,7 @@ export default function Chat() {
   const [model1, setModel1] = useState('llama-3-3-70b');
   const [model2, setModel2] = useState('llama-3-1-8b');
   const [isComparisonMode, setIsComparisonMode] = useState(false);
+  const [activePanel, setActivePanel] = useState<'both' | 1 | 2>('both'); // for comparison focus
   const [isDropdown1Open, setIsDropdown1Open] = useState(false);
   const [isDropdown2Open, setIsDropdown2Open] = useState(false);
   const [theme, setTheme] = useState('dark');
@@ -71,6 +72,7 @@ export default function Chat() {
   const startNewChat = () => {
     setCurrentChatId(null);
     setIsComparisonMode(false);
+    setActivePanel('both');
     if (isMobile) setIsSidebarOpen(false);
   };
 
@@ -279,7 +281,7 @@ export default function Chat() {
           </div>
 
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <button className="btn-3d" onClick={() => setIsComparisonMode(!isComparisonMode)} style={{ color: isComparisonMode ? 'var(--accent-color)' : 'var(--text-primary)' }}>
+            <button className="btn-3d" onClick={() => { setIsComparisonMode(!isComparisonMode); setActivePanel('both'); }} style={{ color: isComparisonMode ? 'var(--accent-color)' : 'var(--text-primary)' }}>
               <SplitSquareHorizontal size={18} style={{ marginRight: '8px' }} />
               <span className="hide-mobile">{isComparisonMode ? "Comparison On" : "Compare"}</span>
             </button>
@@ -314,18 +316,45 @@ export default function Chat() {
                 </div>
 
                 {isComparisonMode && m.role === 'assistant' ? (
-                  <div className="comparison-grid" style={{ flex: 1 }}>
-                    <div className="bubble-ai" style={{ padding: '24px' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--accent-color)', marginBottom: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {selectedModel1Data.icon} {selectedModel1Data.name}
-                      </div>
-                      <div style={{ lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>{m.content}</div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {/* Mobile tab switcher */}
+                    <div className="comparison-tabs">
+                      <button
+                        className={`comp-tab ${activePanel !== 2 ? 'active' : ''}`}
+                        onClick={() => setActivePanel(activePanel === 1 ? 'both' : 1)}
+                      >
+                        {selectedModel1Data.icon}
+                        <span style={{ marginLeft: '6px' }}>{selectedModel1Data.name}</span>
+                        {activePanel === 1 && <span className="focus-badge">Focused</span>}
+                      </button>
+                      <button
+                        className={`comp-tab ${activePanel !== 1 ? 'active' : ''}`}
+                        onClick={() => setActivePanel(activePanel === 2 ? 'both' : 2)}
+                      >
+                        {selectedModel2Data.icon}
+                        <span style={{ marginLeft: '6px' }}>{selectedModel2Data.name}</span>
+                        {activePanel === 2 && <span className="focus-badge">Focused</span>}
+                      </button>
                     </div>
-                    <div className="bubble-ai" style={{ padding: '24px' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--accent-color)', marginBottom: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {selectedModel2Data.icon} {selectedModel2Data.name}
-                      </div>
-                      <div style={{ lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>{m.content2}</div>
+                    <div className="comparison-grid" data-active={activePanel}>
+                      {activePanel !== 2 && (
+                        <div className="bubble-ai comp-panel" style={{ padding: '24px', cursor: 'pointer' }} onClick={() => setActivePanel(activePanel === 1 ? 'both' : 1)}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--accent-color)', marginBottom: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{selectedModel1Data.icon} {selectedModel1Data.name}</span>
+                            <span className="panel-hint">{activePanel === 1 ? '⊠ Show both' : '⊞ Focus'}</span>
+                          </div>
+                          <div style={{ lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>{m.content}</div>
+                        </div>
+                      )}
+                      {activePanel !== 1 && (
+                        <div className="bubble-ai comp-panel" style={{ padding: '24px', cursor: 'pointer' }} onClick={() => setActivePanel(activePanel === 2 ? 'both' : 2)}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--accent-color)', marginBottom: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{selectedModel2Data.icon} {selectedModel2Data.name}</span>
+                            <span className="panel-hint">{activePanel === 2 ? '⊠ Show both' : '⊞ Focus'}</span>
+                          </div>
+                          <div style={{ lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>{m.content2}</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -408,6 +437,30 @@ export default function Chat() {
         @media (max-width: 768px) { .hide-mobile { display: none; } }
         .chat-item .delete-icon { opacity: 0; transition: opacity 0.2s; }
         .chat-item:hover .delete-icon { opacity: 1; }
+        
+        .comp-panel { transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .comp-panel:hover { transform: translateY(-2px); box-shadow: var(--shadow-3d-button), 0 0 0 2px var(--accent-color); }
+        
+        .panel-hint { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; opacity: 0; transition: opacity 0.2s; cursor: pointer; }
+        .comp-panel:hover .panel-hint { opacity: 1; }
+
+        /* Comparison tabs - visible only on mobile */
+        .comparison-tabs { display: none; gap: 8px; }
+        @media (max-width: 768px) {
+          .comparison-tabs { display: flex; }
+          .comp-tab {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            padding: 10px 8px; border-radius: 14px; border: none;
+            background: var(--bg-secondary); color: var(--text-muted);
+            font-family: inherit; font-size: 0.8rem; font-weight: 600;
+            box-shadow: var(--shadow-3d-button); cursor: pointer;
+            transition: all 0.3s ease; gap: 4px;
+          }
+          .comp-tab.active { background: var(--accent-color); color: white; box-shadow: 0 6px 18px rgba(99,102,241,0.4); }
+          .focus-badge { background: rgba(255,255,255,0.25); border-radius: 8px; padding: 2px 6px; font-size: 0.68rem; margin-left: 4px; }
+          .comparison-grid { grid-template-columns: 1fr !important; }
+          .panel-hint { display: none; }
+        }
       `}} />
       </div>
     </div>
