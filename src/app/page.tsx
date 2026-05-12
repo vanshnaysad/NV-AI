@@ -295,11 +295,11 @@ export default function Chat() {
           {currentMessages.length === 0 ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', opacity: 0.8 }}>
               <div className="glass-panel" style={{ padding: '40px', borderRadius: '24px', maxWidth: '500px' }}>
-                <div style={{ width: '100px', height: '100px', margin: '0 auto 32px', position: 'relative', perspective: '1000px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div className="ring ring1"></div>
-                  <div className="ring ring2"></div>
-                  <div className="ring ring3"></div>
-                  <div className="core"></div>
+                <div className="orb-container">
+                  <div className="premium-ring pring1"></div>
+                  <div className="premium-ring pring2"></div>
+                  <div className="premium-ring pring3"></div>
+                  <div className="premium-core"></div>
                 </div>
                 <h2>Welcome to NV AI</h2>
                 <p style={{ marginTop: '12px', color: 'var(--text-muted)' }}>Experience 3D aesthetics, side-by-side AI comparison, and a lightning-fast interface.</p>
