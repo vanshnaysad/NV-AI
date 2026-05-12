@@ -316,43 +316,24 @@ export default function Chat() {
                 </div>
 
                 {isComparisonMode && m.role === 'assistant' ? (
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {/* Mobile tab switcher */}
-                    <div className="comparison-tabs">
-                      <button
-                        className={`comp-tab ${activePanel !== 2 ? 'active' : ''}`}
-                        onClick={() => setActivePanel(activePanel === 1 ? 'both' : 1)}
-                      >
-                        {selectedModel1Data.icon}
-                        <span style={{ marginLeft: '6px' }}>{selectedModel1Data.name}</span>
-                        {activePanel === 1 && <span className="focus-badge">Focused</span>}
-                      </button>
-                      <button
-                        className={`comp-tab ${activePanel !== 1 ? 'active' : ''}`}
-                        onClick={() => setActivePanel(activePanel === 2 ? 'both' : 2)}
-                      >
-                        {selectedModel2Data.icon}
-                        <span style={{ marginLeft: '6px' }}>{selectedModel2Data.name}</span>
-                        {activePanel === 2 && <span className="focus-badge">Focused</span>}
-                      </button>
-                    </div>
+                  <div style={{ flex: 1 }}>
                     <div className="comparison-grid" data-active={activePanel}>
                       {activePanel !== 2 && (
-                        <div className="bubble-ai comp-panel" style={{ padding: '24px', cursor: 'pointer' }} onClick={() => setActivePanel(activePanel === 1 ? 'both' : 1)}>
-                          <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--accent-color)', marginBottom: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{selectedModel1Data.icon} {selectedModel1Data.name}</span>
-                            <span className="panel-hint">{activePanel === 1 ? '⊠ Show both' : '⊞ Focus'}</span>
+                        <div className="bubble-ai comp-panel" style={{ cursor: 'pointer' }} onClick={() => setActivePanel(activePanel === 1 ? 'both' : 1)}>
+                          <div className="comp-panel-header">
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>{selectedModel1Data.icon} {selectedModel1Data.name}</span>
+                            <span className="panel-hint">{activePanel === 1 ? '⊠ Both' : '⊞ Focus'}</span>
                           </div>
-                          <div style={{ lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>{m.content}</div>
+                          <div className="comp-panel-body">{m.content}</div>
                         </div>
                       )}
                       {activePanel !== 1 && (
-                        <div className="bubble-ai comp-panel" style={{ padding: '24px', cursor: 'pointer' }} onClick={() => setActivePanel(activePanel === 2 ? 'both' : 2)}>
-                          <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--accent-color)', marginBottom: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{selectedModel2Data.icon} {selectedModel2Data.name}</span>
-                            <span className="panel-hint">{activePanel === 2 ? '⊠ Show both' : '⊞ Focus'}</span>
+                        <div className="bubble-ai comp-panel" style={{ cursor: 'pointer' }} onClick={() => setActivePanel(activePanel === 2 ? 'both' : 2)}>
+                          <div className="comp-panel-header">
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>{selectedModel2Data.icon} {selectedModel2Data.name}</span>
+                            <span className="panel-hint">{activePanel === 2 ? '⊠ Both' : '⊞ Focus'}</span>
                           </div>
-                          <div style={{ lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>{m.content2}</div>
+                          <div className="comp-panel-body">{m.content2}</div>
                         </div>
                       )}
                     </div>
@@ -438,27 +419,27 @@ export default function Chat() {
         .chat-item .delete-icon { opacity: 0; transition: opacity 0.2s; }
         .chat-item:hover .delete-icon { opacity: 1; }
         
-        .comp-panel { transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        /* Comparison panel base */
+        .comp-panel { transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 20px; }
         .comp-panel:hover { transform: translateY(-2px); box-shadow: var(--shadow-3d-button), 0 0 0 2px var(--accent-color); }
         
-        .panel-hint { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; opacity: 0; transition: opacity 0.2s; cursor: pointer; }
+        .comp-panel-header {
+          font-size: 0.82rem; font-weight: 600; color: var(--accent-color);
+          margin-bottom: 10px; padding-bottom: 10px;
+          border-bottom: 1px solid var(--border-color);
+          display: flex; align-items: center; justify-content: space-between; gap: 6px;
+        }
+        .comp-panel-body { line-height: 1.65; white-space: pre-wrap; font-size: 0.9rem; }
+
+        .panel-hint { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; opacity: 0; transition: opacity 0.2s; cursor: pointer; white-space: nowrap; }
         .comp-panel:hover .panel-hint { opacity: 1; }
 
-        /* Comparison tabs - visible only on mobile */
-        .comparison-tabs { display: none; gap: 8px; }
+        /* Mobile: keep side-by-side, shrink text & padding */
         @media (max-width: 768px) {
-          .comparison-tabs { display: flex; }
-          .comp-tab {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            padding: 10px 8px; border-radius: 14px; border: none;
-            background: var(--bg-secondary); color: var(--text-muted);
-            font-family: inherit; font-size: 0.8rem; font-weight: 600;
-            box-shadow: var(--shadow-3d-button); cursor: pointer;
-            transition: all 0.3s ease; gap: 4px;
-          }
-          .comp-tab.active { background: var(--accent-color); color: white; box-shadow: 0 6px 18px rgba(99,102,241,0.4); }
-          .focus-badge { background: rgba(255,255,255,0.25); border-radius: 8px; padding: 2px 6px; font-size: 0.68rem; margin-left: 4px; }
-          .comparison-grid { grid-template-columns: 1fr !important; }
+          .comparison-grid { gap: 8px !important; }
+          .comp-panel { padding: 12px 10px !important; }
+          .comp-panel-header { font-size: 0.7rem; margin-bottom: 8px; padding-bottom: 8px; }
+          .comp-panel-body { font-size: 0.78rem; line-height: 1.5; }
           .panel-hint { display: none; }
         }
       `}} />

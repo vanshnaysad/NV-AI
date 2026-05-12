@@ -238,21 +238,15 @@ body {
   animation: slideUpFade 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-/* Grid Layout for Side-by-side */
+/* Grid Layout for Side-by-side - always 2 columns, even on mobile */
 .comparison-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  height: 100%;
-}
-@media (max-width: 1024px) {
-  .comparison-grid {
-    gap: 16px;
-  }
+  gap: 16px;
 }
 @media (max-width: 768px) {
   .comparison-grid {
-    gap: 8px;
+    gap: 6px;
   }
 }
 
